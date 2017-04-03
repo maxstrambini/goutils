@@ -13,6 +13,7 @@ import (
 )
 
 var PackageDesc string = "utility functions in goutils package"
+var PackageVersion string = "1.1.0"
 
 func PrintMap(title string, m map[string]interface{}, to_log bool) {
 
