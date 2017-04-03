@@ -77,6 +77,31 @@ func ExistsPath(path string) bool {
 	return false
 }
 
+//ExistsPathE returns whether the given file or directory exists or not and an Error
+func ExistsPathE(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+//ExistsDirE returns whether the given directory exists or not and en Error
+func ExistsDirE(path string) (bool, error) {
+	stat, err := os.Stat(path)
+	if err == nil {
+		if stat.IsDir() {
+			return true, nil
+		}
+		return false, fmt.Errorf("'%s' is not a folder", path)
+	}
+	return false, fmt.Errorf("'%s' not found", path)
+}
+
+
 //SafeCreateFolder create all path with logging, folder rights are '0777'
 func SafeCreateFolder(path string) (success bool) {
 	if !ExistsPath(path) {
