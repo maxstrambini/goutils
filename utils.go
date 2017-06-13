@@ -12,9 +12,13 @@ import (
 	"time"
 )
 
+//PackageDesc string description
 var PackageDesc string = "utility functions in goutils package"
+
+//PackageVersion string version
 var PackageVersion string = "1.1.0"
 
+//PrintMap
 func PrintMap(title string, m map[string]interface{}, to_log bool) {
 
 	fmt.Println(title)
@@ -43,6 +47,7 @@ func PrintMap(title string, m map[string]interface{}, to_log bool) {
 	}
 }
 
+//PrettyPrintMap
 func PrettyPrintMap(m map[string]interface{}) {
 	fmt.Println("********************")
 	b, err := json.MarshalIndent(m, "", "  ")
@@ -54,6 +59,7 @@ func PrettyPrintMap(m map[string]interface{}) {
 	fmt.Println("********************")
 }
 
+//EncodeXMLText
 func EncodeXMLText(text string) (encodedtext string) {
 	encodedtext = strings.Replace(text, "&", "&amp;", -1)
 	encodedtext = strings.Replace(encodedtext, "<", "&lt;", -1)
@@ -63,6 +69,7 @@ func EncodeXMLText(text string) (encodedtext string) {
 	return
 }
 
+//GetNowString
 func GetNowString() string {
 	t := time.Now()
 	return fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
@@ -100,7 +107,6 @@ func ExistsDirE(path string) (bool, error) {
 	}
 	return false, fmt.Errorf("'%s' not found", path)
 }
-
 
 //SafeCreateFolder create all path with logging, folder rights are '0777'
 func SafeCreateFolder(path string) (success bool) {
