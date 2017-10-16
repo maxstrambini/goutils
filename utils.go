@@ -13,16 +13,16 @@ import (
 )
 
 //PackageDesc string description
-var PackageDesc string = "utility functions in goutils package"
+var PackageDesc = "utility functions in goutils package"
 
 //PackageVersion string version
-var PackageVersion string = "1.1.0"
+var PackageVersion = "1.2.0"
 
-//PrintMap
-func PrintMap(title string, m map[string]interface{}, to_log bool) {
+//PrintMap prints a map to console/log
+func PrintMap(title string, m map[string]interface{}, toLog bool) {
 
 	fmt.Println(title)
-	if to_log {
+	if toLog {
 		log.Println(title)
 	}
 
@@ -34,32 +34,32 @@ func PrintMap(title string, m map[string]interface{}, to_log bool) {
 
 	for _, k := range keys {
 		//fmt.Println("> [", k, "]:", m[k])
-		//if to_log {log.Println("> [", k, "]:", m[k])}
+		//if toLog {log.Println("> [", k, "]:", m[k])}
 		fmt.Println("> [", k, "](", reflect.TypeOf(m[k]), "):", m[k])
-		if to_log {
+		if toLog {
 			log.Println("> [", k, "]:(", reflect.TypeOf(m[k]), "):", m[k])
 		}
 	}
 
 	fmt.Println("********************")
-	if to_log {
+	if toLog {
 		log.Println("********************")
 	}
 }
 
-//PrettyPrintMap
+//PrettyPrintMap pretty prints a map to log
 func PrettyPrintMap(m map[string]interface{}) {
 	fmt.Println("********************")
 	b, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
-		log.Printf("PrettyPrintMap error:", err)
+		log.Printf("PrettyPrintMap error: '%v'", err)
 	} else {
 		log.Printf("PrettyPrintMap: \n%s", string(b))
 	}
 	fmt.Println("********************")
 }
 
-//EncodeXMLText
+//EncodeXMLText change XML forbidden chars to their safe equivalents
 func EncodeXMLText(text string) (encodedtext string) {
 	encodedtext = strings.Replace(text, "&", "&amp;", -1)
 	encodedtext = strings.Replace(encodedtext, "<", "&lt;", -1)
@@ -69,7 +69,7 @@ func EncodeXMLText(text string) (encodedtext string) {
 	return
 }
 
-//GetNowString
+//GetNowString returns a now string
 func GetNowString() string {
 	t := time.Now()
 	return fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02d",
@@ -158,5 +158,22 @@ func SafeMoveWithStub(source, dest, stubText string) (success bool) {
 func GetFileNameWithoutExtension(fullName string) (nameWithoutExt string) {
 	_, n := path.Split(fullName)
 	nameWithoutExt = n[0 : len(n)-len(path.Ext(n))]
+	return
+}
+
+//WriteTextToFile write some text to a file
+func WriteTextToFile(fullName, text string) (success bool) {
+	f, err := os.Create(fullName) // create/truncate the file
+	if err != nil {
+		log.Printf("ERROR while creating/truncating file '%s': %s", fullName, err)
+	} else {
+		defer f.Close() // make sure it gets closed after
+
+		_, errw := f.WriteString(text)
+		if errw != nil {
+			log.Printf("ERROR writing text to file '%s': %s", fullName, errw)
+		}
+		success = true
+	}
 	return
 }
