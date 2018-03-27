@@ -2,7 +2,9 @@ package goutils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path"
@@ -161,6 +163,34 @@ func GetFileNameWithoutExtension(fullName string) (nameWithoutExt string) {
 	return
 }
 
+// ReadDirMax is ioutil.ReadDir copied to allow different sorting (or none)
+// Example:
+//		fileInfos, _ := goutils.ReadDirMax("D:\\Temp\\in1", "size")
+//		for _, f := range fileInfos {
+//			if !f.IsDir() {
+//				log.Printf("FILE %+v", f.Name())
+//			}
+//		}
+func ReadDirMax(dirname string, sortBy string) ([]os.FileInfo, error) {
+	f, err := os.Open(dirname)
+	if err != nil {
+		return nil, err
+	}
+	list, err := f.Readdir(-1)
+	f.Close()
+	if err != nil {
+		return nil, err
+	}
+	if sortBy == "name" {
+		sort.Slice(list, func(i, j int) bool { return list[i].Name() < list[j].Name() })
+	} else if sortBy == "modified" {
+		sort.Slice(list, func(i, j int) bool { return list[i].ModTime().UnixNano() < list[j].ModTime().UnixNano() })
+	} else if sortBy == "size" {
+		sort.Slice(list, func(i, j int) bool { return list[i].Size() < list[j].Size() })
+	}
+	return list, nil
+}
+
 //WriteTextToFile write some text to a file
 func WriteTextToFile(fullName, text string) (success bool) {
 	f, err := os.Create(fullName) // create/truncate the file
@@ -176,4 +206,113 @@ func WriteTextToFile(fullName, text string) (success bool) {
 		success = true
 	}
 	return
+}
+
+//WaitForever block waiting forever
+func WaitForever() {
+	select {}
+}
+
+//GetFileAgeInMinutes returns a file age in minutes
+func GetFileAgeInMinutes(fullName string) (success bool, age int64) {
+
+	info, err := os.Stat(fullName)
+	if err != nil {
+		log.Printf("GetFileAgeInMinutes: ERROR in stat for '%s' -> %v", fullName, err)
+		return
+	}
+
+	age = int64(time.Since(info.ModTime()).Minutes())
+	success = true
+	return
+}
+
+//GetFileAgeInSeconds returns a file age in minutes
+func GetFileAgeInSeconds(fullName string) (success bool, age int64) {
+
+	info, err := os.Stat(fullName)
+	if err != nil {
+		log.Printf("GetFileAgeInSeconds: ERROR in stat for '%s' -> %v", fullName, err)
+		return
+	}
+
+	age = int64(time.Since(info.ModTime()).Seconds())
+	success = true
+	return
+}
+
+//GetFileAge returns a file age as duration than use for example duration.Minutes() or duration.Seconds()
+func GetFileAge(fullName string) (success bool, duration time.Duration) {
+
+	info, err := os.Stat(fullName)
+	if err != nil {
+		log.Printf("GetFileAge: ERROR in stat for '%s' -> %v", fullName, err)
+		return
+	}
+
+	duration = time.Since(info.ModTime())
+	success = true
+	return
+}
+
+//CopyFile copy from source path to destination path and return error
+func CopyFile(src string, dst string, overwriteExisting bool) error {
+	from, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer from.Close()
+
+	if !overwriteExisting {
+		_, err := os.Stat(dst)
+		if err == nil {
+			//file exists, return error
+			return errors.New("Destination '" + dst + "' already exists: overwrite not set")
+		}
+	}
+	to, err2 := os.OpenFile(dst, os.O_RDWR|os.O_CREATE, 0666)
+	if err2 != nil {
+		return err2
+	}
+	defer to.Close()
+
+	_, err = io.Copy(to, from)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//CopyFileEx copy from source path to destination path and return error
+func CopyFileEx(src string, dst string, overwriteExisting bool) (overwritten bool, err error) {
+	from, err := os.Open(src)
+	if err != nil {
+		return false, err
+	}
+	defer from.Close()
+
+	_, erre := os.Stat(dst)
+	if erre == nil {
+		//file exists
+		if overwriteExisting {
+			overwritten = true
+		} else {
+			return false, errors.New("Destination '" + dst + "' already exists: overwrite not set")
+		}
+	} else {
+		//file does not exist
+		//overwritten = false
+	}
+
+	to, err2 := os.OpenFile(dst, os.O_RDWR|os.O_CREATE, 0666)
+	if err2 != nil {
+		return overwritten, err2
+	}
+	defer to.Close()
+
+	_, err = io.Copy(to, from)
+	if err != nil {
+		return overwritten, err
+	}
+	return overwritten, nil
 }
