@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -204,6 +205,25 @@ func WriteTextToFile(fullName, text string) (success bool) {
 			log.Printf("ERROR writing text to file '%s': %s", fullName, errw)
 		}
 		success = true
+	}
+	return
+}
+
+//ReadTextFromFile reads text from a file
+func ReadTextFromFile(fullName string) (text string, err error) {
+	var f *os.File
+	f, err = os.Open(fullName)
+	if err != nil {
+		log.Printf("ERROR while opening file '%s': %s", fullName, err)
+	} else {
+		defer f.Close() // make sure it gets closed after
+
+		var b []byte
+		b, err = ioutil.ReadAll(f)
+		if err != nil {
+			log.Printf("ERROR reading from file '%s': %s", fullName, err)
+		}
+		text = string(b) // convert content to a 'string'
 	}
 	return
 }
