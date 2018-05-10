@@ -2,7 +2,13 @@
 
 Some golang utility functions I use
 
-##Example:
+
+## History
+
+[2018-05-10] added 'max_rotate_log_writer.go' defining 'MaxRotateWriter': a rotating file writer for logs [2018-05-10]
+
+
+## Example:
 
 				package main
 
@@ -16,6 +22,16 @@ Some golang utility functions I use
 
 					log.Printf(goutils.GetNowString())
 
+					// BEGIN test MaxRotateWriter: a rotating file writer for logs [2018-05-10]
+					maxRotateWriter := NewMaxRotateWriter("maxrotate.log", 10000)
+					var buf string
+					for i := 0; i<10000; i++ {
+						fmt.Println(i)
+						buf = fmt.Sprintf("line #%d ========================================\n", i)
+						maxRotateWriter.Write([]byte(buf))
+						time.Sleep(10 * time.Millisecond)
+					}
+					// END test MaxRotateWriter
 
 					/*
 					//ExistsPath example:
