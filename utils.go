@@ -87,19 +87,41 @@ func ExistsPath(path string) bool {
 	return false
 }
 
-//ExistsPathE returns whether the given file or directory exists or not and an Error
+//ExistsPathE returns whether the given file or directory exists or not with the Error
 func ExistsPathE(path string) (bool, error) {
 	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
+
+	/*
+		if err == nil {
+			//file was found
+			return true, nil
+		}
+		if os.IsNotExist(err) {
+			// error reports that file does not exist
+			// return false, without any error
+			return false, nil
+		}
+		// more serious errors, maybe stat itself has failed
+		return false, err
+	*/
+
+	//better written:
+	if err != nil {
+		if os.IsNotExist(err) {
+			// error reports that file does not exist
+			// return false, without any error
+			return false, nil
+		} else {
+			// more serious errors, maybe stat itself has failed
+			return false, err
+		}
 	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
+	//file was found
+	return true, nil
+
 }
 
-//ExistsDirE returns whether the given directory exists or not and en Error
+//ExistsDirE returns whether the given directory exists or not and the Error
 func ExistsDirE(path string) (bool, error) {
 	stat, err := os.Stat(path)
 	if err == nil {
