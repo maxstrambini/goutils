@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path"
 	"reflect"
@@ -250,9 +251,14 @@ func ReadTextFromFile(fullName string) (text string, err error) {
 	return
 }
 
-//WaitForever block waiting forever
+//WaitForever block waiting forever a goroutine
 func WaitForever() {
 	select {}
+}
+
+//WaitForeverMain block waiting forever a main func
+func WaitForeverMain() {
+	<-time.After(time.Duration(math.MaxInt64))
 }
 
 //GetFileAgeInMinutes returns a file age in minutes
