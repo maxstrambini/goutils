@@ -7,6 +7,8 @@ Some golang utility functions I use
 
 [2018-05-10] added 'max_rotate_log_writer.go' defining 'MaxRotateWriter': a rotating file writer for logs [2018-05-10]
 
+[2018-05-10] 'max_rotate_log_writer.go' can now rotate by number instaed of dates with a maximum number
+
 
 ## Example:
 
