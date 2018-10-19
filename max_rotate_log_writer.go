@@ -9,7 +9,7 @@ max_rotate_log_writer.go
 ## esempio di utilizzo:
 
 			func main() {
-				maxRotateWriter := NewMaxRotateWriter("maxrotate.log", 100000) //log file name, max bytes per log file
+				maxRotateWriter := NewMaxRotateWriter(logName, 5*1024*1024, true, 30)
 				log.SetOutput(maxRotateWriter)
 				log.Printf("rotating log ...\n")
 			}
