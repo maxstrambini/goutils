@@ -116,4 +116,4 @@ Some golang utility functions I use
 				}
 
 
-
+[2019-03-25] added GetNowForFileName()
