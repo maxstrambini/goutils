@@ -9,6 +9,10 @@ Some golang utility functions I use
 
 [2018-05-10] 'max_rotate_log_writer.go' can now rotate by number instaed of dates with a maximum number
 
+[2019-03-25] added GetNowForFileName()
+
+[2019-03-28] added PrettyPrintStruct(), for example: goutils.PrettyPrintStruct(mystruct)
+    
 
 ## Example:
 
@@ -116,4 +120,4 @@ Some golang utility functions I use
 				}
 
 
-[2019-03-25] added GetNowForFileName()
+
