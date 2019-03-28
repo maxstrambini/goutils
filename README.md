@@ -11,8 +11,13 @@ Some golang utility functions I use
 
 [2019-03-25] added GetNowForFileName()
 
-[2019-03-28] added PrettyPrintStruct(), for example: goutils.PrettyPrintStruct(mystruct)
-    
+[2019-03-28] added PrettyPrintStruct() printing to stdout and PrettyFormatStruct() returning a string
+They both can be used to print a struct one field per line with name and value
+
+    for example: 
+        goutils.PrettyPrintStruct(mystruct)
+        or
+        fmt.Printf("%s\n", goutils.PrettyFormatStruct(mystruct))
 
 ## Example:
 

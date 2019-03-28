@@ -387,3 +387,21 @@ func PrettyPrintStruct(obj interface{}) {
 		}
 	}
 }
+
+//PrettyFormatStruct format a struct to a string for printing using reflection, simple version
+func PrettyFormatStruct(obj interface{}) string {
+	s := ""
+	typ := reflect.TypeOf(obj)
+	val := reflect.ValueOf(obj)
+	for i := 0; i < typ.NumField(); i++ {
+		if val.Field(i).CanInterface() {
+			fieldValue := val.Field(i).Interface()
+			//fmt.Println(fieldValue)
+			s += fmt.Sprintf("%d: %s %s = %v\n", i,
+				typ.Field(i).Name, val.Field(i).Type(), fieldValue)
+		} else {
+			s += fmt.Sprintf("%d: %s (private value)\n", i, typ.Field(i).Name)
+		}
+	}
+	return s
+}
