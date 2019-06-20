@@ -77,12 +77,13 @@ func (w *MaxRotateWriter) Rotate() (err error) {
 // rotateWithoutLock perform the actual act of rotating and reopening file.
 func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 
-	fmt.Printf("Rotating logs ...\n")
+	//fmt.Printf("Rotating logs ...\n")
 	//time.Sleep(3 * time.Second)
 
 	// Close existing file if open
 	if w.fp != nil {
 		//fmt.Printf("close file ...\n")
+		err = w.fp.Sync()
 		err = w.fp.Close()
 		w.fp = nil
 		if err != nil {
@@ -90,16 +91,16 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 			return
 		}
 	} else {
-		//fmt.Printf("no file to close ...\n")
+		fmt.Printf("rotating log has no file to close ...\n")
 	}
 
 	if w.rotateFilesByNumber {
 
+		var logBaseName = w.filename[0 : len(w.filename)-len(path.Ext(w.filename))] //removed extension from filename
+		var logName string
 		for i := w.maxRotatedFilesByNumber; i >= 0; i-- {
 
-			logBaseName := w.filename[0 : len(w.filename)-len(path.Ext(w.filename))] //removed extension from filename
-
-			logName := fmt.Sprintf("%s_%d%s", logBaseName, i, path.Ext(w.filename))
+			logName = fmt.Sprintf("%s_%d%s", logBaseName, i, path.Ext(w.filename))
 
 			if i == w.maxRotatedFilesByNumber {
 				//fmt.Printf("rotating: removing '%s'\n", logName)
@@ -109,10 +110,10 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 				}
 			} else if i == 0 {
 				logNextName := fmt.Sprintf("%s_1%s", logBaseName, path.Ext(w.filename))
-				//fmt.Printf("rotating: renaming '%s' to '%s'\n", logName, logNextName)
+				//fmt.Printf("rotating: renaming '%s' to '%s'\n", w.filename, logNextName)
 				err = os.Rename(w.filename, logNextName)
 				if err != nil {
-					//fmt.Printf("error rotating '%s' to '%s': %v\n", w.filename, logNextName, err)
+					fmt.Printf("error rotating '%s' to '%s': %v\n", w.filename, logNextName, err)
 				}
 			} else {
 				logNextName := fmt.Sprintf("%s_%d%s", logBaseName, i+1, path.Ext(w.filename))
@@ -136,7 +137,7 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 
 			newName = fmt.Sprintf("%s_%04d%02d%02dT%02d%02d%02d%s", newName, t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), path.Ext(w.filename))
 
-			fmt.Printf("rename '%s' to '%s' ...\n", w.filename, newName)
+			//fmt.Printf("rename '%s' to '%s' ...\n", w.filename, newName)
 			err = os.Rename(w.filename, newName)
 			if err != nil {
 				fmt.Printf("rotating error on rename: %v\n", err)
@@ -148,13 +149,14 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 	}
 
 	// Create a file.
-	fmt.Printf("Creating '%s' ...\n", w.filename)
+	//fmt.Printf("Creating '%s' ...\n", w.filename)
 	w.fp, err = os.Create(w.filename)
 	if err != nil {
-		fmt.Printf("rotating error on create: %v\n", err)
+		fmt.Printf("rotating log error on create: %v\n", err)
 		return
 	}
 	w.writterBytes = 0
+
 	return
 }
 
