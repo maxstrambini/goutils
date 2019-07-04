@@ -380,10 +380,10 @@ func PrettyPrintStruct(obj interface{}) {
 		if val.Field(i).CanInterface() {
 			fieldValue := val.Field(i).Interface()
 			//fmt.Println(fieldValue)
-			fmt.Printf("%d: %s %s = %v\n", i,
+			fmt.Printf("%02d: %24s %12s = %v\n", i,
 				typ.Field(i).Name, val.Field(i).Type(), fieldValue)
 		} else {
-			fmt.Printf("%d: %s (private value)\n", i, typ.Field(i).Name)
+			fmt.Printf("%02d: %24s (private value)\n", i, typ.Field(i).Name)
 		}
 	}
 }
@@ -397,10 +397,10 @@ func PrettyFormatStruct(obj interface{}) string {
 		if val.Field(i).CanInterface() {
 			fieldValue := val.Field(i).Interface()
 			//fmt.Println(fieldValue)
-			s += fmt.Sprintf("%d: %s %s = %v\n", i,
+			s += fmt.Sprintf("%02d: %24s %12s = %v\n", i,
 				typ.Field(i).Name, val.Field(i).Type(), fieldValue)
 		} else {
-			s += fmt.Sprintf("%d: %s (private value)\n", i, typ.Field(i).Name)
+			s += fmt.Sprintf("%02d: %24s (private value)\n", i, typ.Field(i).Name)
 		}
 	}
 	return s
