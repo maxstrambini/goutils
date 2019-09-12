@@ -19,6 +19,10 @@ They both can be used to print a struct one field per line with name and value
         or
         fmt.Printf("%s\n", goutils.PrettyFormatStruct(mystruct))
 
+[2019-09-11] logs written to file and also to stdout
+
+[2019-09-11] added PrettyPrintStructSimple, PrettyPrintInterface
+
 ## Example:
 
 				package main

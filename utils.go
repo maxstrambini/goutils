@@ -372,6 +372,35 @@ func CopyFileEx(src string, dst string, overwriteExisting bool) (overwritten boo
 	return overwritten, nil
 }
 
+//PrettyPrintStructSimple prints a struct using reflection, simple version
+func PrettyPrintStructSimple(obj interface{}) {
+	typ := reflect.TypeOf(obj)
+	val := reflect.ValueOf(obj)
+	for i := 0; i < typ.NumField(); i++ {
+		if val.Field(i).CanInterface() {
+			fieldValue := val.Field(i).Interface()
+			if val.Field(i).Type().String() == "string" {
+				if len(val.Field(i).String()) > 0 {
+					fmt.Printf("%s: '%v'", typ.Field(i).Name, fieldValue)
+				}
+			} else {
+				fmt.Printf("%s: '%v'", typ.Field(i).Name, fieldValue)
+			}
+		} else {
+			fmt.Printf("%s (private value)", typ.Field(i).Name)
+		}
+		fmt.Printf(" ")
+	}
+	fmt.Printf("\n")
+}
+
+//PrettyPrintInterface prints a struct using reflection, simple version
+func PrettyPrintInterface(i interface{}) string {
+	s, _ := json.MarshalIndent(i, "", "\t")
+	fmt.Printf("%s\n", string(s))
+	return string(s)
+}
+
 //PrettyPrintStruct prints a struct using reflection, simple version
 func PrettyPrintStruct(obj interface{}) {
 	typ := reflect.TypeOf(obj)

@@ -14,10 +14,8 @@ max_rotate_log_writer.go
 				log.Printf("rotating log ...\n")
 			}
 
-## TODO:
-- ruotare usando numeri invece che date
-- cancellare vecchi log
 
+[2019-09-11] logs written to file and also to stdout
 */
 
 package goutils
@@ -45,10 +43,12 @@ type MaxRotateWriter struct {
 func NewMaxRotateWriter(filename string, maxBytes int, rotateFilesByNumber bool, maxRotatedFilesByNumber int) *MaxRotateWriter {
 	w := &MaxRotateWriter{filename: filename, maxBytes: maxBytes,
 		rotateFilesByNumber: rotateFilesByNumber, maxRotatedFilesByNumber: maxRotatedFilesByNumber}
+
 	err := w.Rotate()
 	if err != nil {
 		return nil
 	}
+
 	fmt.Printf("LOG: %+v\n", w)
 	return w
 }
@@ -57,6 +57,7 @@ func NewMaxRotateWriter(filename string, maxBytes int, rotateFilesByNumber bool,
 func (w *MaxRotateWriter) Write(output []byte) (int, error) {
 	w.lock.Lock()
 	defer w.lock.Unlock()
+	os.Stdout.Write(output)
 	n, err := w.fp.Write(output)
 	w.writterBytes += n
 	if w.maxBytes > 0 && w.writterBytes >= w.maxBytes {
@@ -100,29 +101,39 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 		var logName string
 		for i := w.maxRotatedFilesByNumber; i >= 0; i-- {
 
+			//time.Sleep(2 * time.Second)
+			//fmt.Printf("i: %d\n", i)
+
 			logName = fmt.Sprintf("%s_%d%s", logBaseName, i, path.Ext(w.filename))
 
-			if i == w.maxRotatedFilesByNumber {
-				//fmt.Printf("rotating: removing '%s'\n", logName)
-				err = os.Remove(logName)
-				if err != nil {
-					//fmt.Printf("Error rotating '%s' to DELETE: %v\n", logName, err)
-				}
-			} else if i == 0 {
+			if i == 0 {
 				logNextName := fmt.Sprintf("%s_1%s", logBaseName, path.Ext(w.filename))
-				//fmt.Printf("rotating: renaming '%s' to '%s'\n", w.filename, logNextName)
+				//fmt.Printf("log rotate: renaming '%s' to '%s'\n", w.filename, logNextName)
+
+				_, errs := os.Stat(w.filename)
+				if errs != nil {
+					fmt.Printf("log rotate: error stat '%s': %v\n", w.filename, errs)
+				}
+
 				err = os.Rename(w.filename, logNextName)
 				if err != nil {
-					fmt.Printf("error rotating '%s' to '%s': %v\n", w.filename, logNextName, err)
+					//fmt.Printf("log rotate: error rotating '%s' to '%s': %v\n", w.filename, logNextName, err)
+				}
+			} else if i == w.maxRotatedFilesByNumber {
+				//fmt.Printf("log rotate: removing '%s'\n", logName)
+				err = os.Remove(logName)
+				if err != nil {
+					//fmt.Printf("log rotate: error deleting '%s': %v\n", logName, err)
 				}
 			} else {
 				logNextName := fmt.Sprintf("%s_%d%s", logBaseName, i+1, path.Ext(w.filename))
-				//fmt.Printf("rotating: renaming '%s' to '%s'\n", logName, logNextName)
+				//fmt.Printf("log rotate: renaming '%s' to '%s'\n", logName, logNextName)
 				err = os.Rename(logName, logNextName)
 				if err != nil {
-					//fmt.Printf("Error rotating '%s' to '%s': %v\n", logName, logNextName, err)
+					//fmt.Printf("log rotate: error rotating '%s' to '%s': %v\n", logName, logNextName, err)
 				}
 			}
+
 		}
 
 	} else {
@@ -137,7 +148,7 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 
 			newName = fmt.Sprintf("%s_%04d%02d%02dT%02d%02d%02d%s", newName, t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), path.Ext(w.filename))
 
-			//fmt.Printf("rename '%s' to '%s' ...\n", w.filename, newName)
+			fmt.Printf("rename '%s' to '%s' ...\n", w.filename, newName)
 			err = os.Rename(w.filename, newName)
 			if err != nil {
 				fmt.Printf("rotating error on rename: %v\n", err)
@@ -149,8 +160,8 @@ func (w *MaxRotateWriter) rotateWithoutLock() (err error) {
 	}
 
 	// Create a file.
-	//fmt.Printf("Creating '%s' ...\n", w.filename)
-	w.fp, err = os.Create(w.filename)
+	fmt.Printf("Creating '%s' ...\n", w.filename)
+	w.fp, err = os.OpenFile(w.filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666) //os.Create(w.filename)
 	if err != nil {
 		fmt.Printf("rotating log error on create: %v\n", err)
 		return
