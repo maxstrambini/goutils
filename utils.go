@@ -87,6 +87,12 @@ func GetNowForFileName() string {
 		t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
 }
 
+//FormatTimeForFileName return a time formatted as compact string to be used in file names
+func FormatTimeForFileName(t time.Time) string {
+	return fmt.Sprintf("%d%02d%02d%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+}
+
 //ExistsPath check if a path exists by doing a stat, no distinction between file and folder
 func ExistsPath(path string) bool {
 	if _, err := os.Stat(path); err == nil {
