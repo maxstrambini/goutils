@@ -331,7 +331,7 @@ func CopyFile(src string, dst string, overwriteExisting bool) error {
 			return errors.New("Destination '" + dst + "' already exists: overwrite not set")
 		}
 	}
-	to, err2 := os.OpenFile(dst, os.O_RDWR|os.O_CREATE, 0666)
+	to, err2 := os.Create(dst)
 	if err2 != nil {
 		return err2
 	}
@@ -365,7 +365,7 @@ func CopyFileEx(src string, dst string, overwriteExisting bool) (overwritten boo
 		//overwritten = false
 	}
 
-	to, err2 := os.OpenFile(dst, os.O_RDWR|os.O_CREATE, 0666)
+	to, err2 := os.Create(dst)
 	if err2 != nil {
 		return overwritten, err2
 	}
