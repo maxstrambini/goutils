@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -226,6 +227,29 @@ func ReadDirMax(dirname string, sortBy string) ([]os.FileInfo, error) {
 		sort.Slice(list, func(i, j int) bool { return list[i].Size() < list[j].Size() })
 	}
 	return list, nil
+}
+
+//CountFiles to count the files in a folder with name matching a regular expression criteria
+//richiede import "regexp"
+func CountFiles(path string, regExCriteria string) (int, error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return 0, err
+	}
+	i := 0
+	matched := false
+	for _, file := range files {
+		if !file.IsDir() {
+			matched, err = regexp.MatchString(regExCriteria, file.Name())
+			if err != nil {
+				return i, err
+			}
+			if matched {
+				i++
+			}
+		}
+	}
+	return i, nil
 }
 
 //WriteTextToFile write some text to a file

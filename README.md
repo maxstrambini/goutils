@@ -23,6 +23,17 @@ They both can be used to print a struct one field per line with name and value
 
 [2019-09-11] added PrettyPrintStructSimple, PrettyPrintInterface
 
+[2019-09-12] rotating file logger now writes also to console, new simple print struct functions
+
+[2019-10-21] added "FormatTimeForFileName"
+
+[2019-10-23] BUG FIXED: in Copyfile replaced 'OpenFile' with 'Create' to ensure the destination file is truncated at zero before starting to copy
+
+[2019-10-25] added func CountFiles(path string, regExCriteria string) (int, error)
+to count the files in a folder with name matching a regular expression criteria
+
+
+
 ## Example:
 
 				package main
