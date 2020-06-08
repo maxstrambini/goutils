@@ -148,6 +148,21 @@ func ExistsDirE(path string) (bool, error) {
 	return false, fmt.Errorf("'%s' not found", path)
 }
 
+//IsDirEmpty checks whether a folder is empty in the most efficient way
+func IsDirEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, err // Either not empty or error
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1) // Or f.Readdir(1) //WE LIMIT THE maximum number returned to 1
+	if err == io.EOF {
+		return true, nil // This is the empty condition
+	}
+	return false, err // Either not empty or error
+}
+
 //SafeCreateFolder create all path with logging, folder rights are '0777'
 func SafeCreateFolder(path string) (success bool) {
 	if !ExistsPath(path) {
