@@ -32,6 +32,7 @@ They both can be used to print a struct one field per line with name and value
 [2019-10-25] added func CountFiles(path string, regExCriteria string) (int, error)
 to count the files in a folder with name matching a regular expression criteria
 
+[2020-11-12] added ReadLinesFromFile
 
 
 ## Example:
