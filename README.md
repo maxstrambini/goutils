@@ -34,6 +34,8 @@ to count the files in a folder with name matching a regular expression criteria
 
 [2020-11-12] added ReadLinesFromFile
 
+[2020-12-16] added GetFileAgeInSecondsWithStat
+
 
 ## Example:
 
