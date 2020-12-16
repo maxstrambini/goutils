@@ -1,6 +1,7 @@
 package goutils
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -299,6 +300,22 @@ func ReadTextFromFile(fullName string) (text string, err error) {
 			log.Printf("ERROR reading from file '%s': %s", fullName, err)
 		}
 		text = string(b) // convert content to a 'string'
+	}
+	return
+}
+
+//ReadLinesFromFile reads text file and return the lines in array
+func ReadLinesFromFile(fullName string) (lines []string, err error) {
+	var f *os.File
+	f, err = os.Open(fullName)
+	if err != nil {
+		log.Printf("ERROR while opening file '%s': %s", fullName, err)
+	} else {
+		defer f.Close() // make sure it gets closed after
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
 	}
 	return
 }
