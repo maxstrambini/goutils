@@ -327,7 +327,7 @@ func GetFileAgeInMinutes(fullName string) (success bool, age int64) {
 	return
 }
 
-//GetFileAgeInSeconds returns a file age in minutes
+//GetFileAgeInSeconds returns a file age in seconds
 func GetFileAgeInSeconds(fullName string) (success bool, age int64) {
 
 	info, err := os.Stat(fullName)
@@ -338,6 +338,18 @@ func GetFileAgeInSeconds(fullName string) (success bool, age int64) {
 
 	age = int64(time.Since(info.ModTime()).Seconds())
 	success = true
+	return
+}
+
+//GetFileAgeInSecondsWithStat returns a file age in seconds, the stat, an error
+func GetFileAgeInSecondsWithStat(fullName string) (age int64, stat os.FileInfo, err error) {
+
+	stat, err = os.Stat(fullName)
+	if err != nil {
+		log.Printf("GetFileAgeInSecondsWithStat: ERROR in stat for '%s' -> %v", fullName, err)
+		return
+	}
+	age = int64(time.Since(info.ModTime()).Seconds())
 	return
 }
 
