@@ -366,7 +366,7 @@ func GetFileAgeInSecondsWithStat(fullName string) (age int64, stat os.FileInfo, 
 		log.Printf("GetFileAgeInSecondsWithStat: ERROR in stat for '%s' -> %v", fullName, err)
 		return
 	}
-	age = int64(time.Since(info.ModTime()).Seconds())
+	age = int64(time.Since(stat.ModTime()).Seconds())
 	return
 }
 
