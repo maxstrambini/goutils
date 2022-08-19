@@ -36,6 +36,7 @@ to count the files in a folder with name matching a regular expression criteria
 
 [2020-12-16] added GetFileAgeInSecondsWithStat
 
+[2022-08-19] added 'max_rotate_log_writer_2.go' with a file logger that only optionally writes to console
 
 ## Example:
 
